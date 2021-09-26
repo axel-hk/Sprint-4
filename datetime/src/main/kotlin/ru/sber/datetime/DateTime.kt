@@ -2,9 +2,7 @@ package ru.sber.datetime
 
 import java.text.DateFormat
 import java.text.SimpleDateFormat
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.ZoneId
+import java.time.*
 import java.time.format.DateTimeFormatter
 import java.time.temporal.TemporalAdjusters
 import java.util.*
@@ -20,13 +18,11 @@ fun getZonesWithNonDivisibleByHourOffset(): Set<String> {
 // 2.
 fun getLastInMonthDayWeekList(year: Int): List<String> {
     var listOfDays: ArrayList<String> = arrayListOf()
-    val dayOfWeekFormatter = DateTimeFormatter.ofPattern("EEEE", Locale.ENGLISH)
     for(i in 1..12) {
 
         val someYear: LocalDate = LocalDate.of(year, i, 1)
-        val lastDayOfWeekInMonth = someYear.with(TemporalAdjusters.lastDayOfMonth()).format(dayOfWeekFormatter)
-        listOfDays.add(lastDayOfWeekInMonth.uppercase(Locale.getDefault()))
-
+        val lastDayOfWeekInMonth = someYear.with(TemporalAdjusters.lastDayOfMonth()).dayOfWeek.name
+        listOfDays.add(lastDayOfWeekInMonth)
     }
 
     return listOfDays
@@ -34,17 +30,14 @@ fun getLastInMonthDayWeekList(year: Int): List<String> {
 
 // 3.
 fun getNumberOfFridayThirteensInYear(year: Int): Int {
-    val dateString = "01/13/$year"
-    val dateFormat: DateFormat = SimpleDateFormat("MM/dd/yyyy")
-    val date = dateFormat.parse(dateString)
-    val cal = Calendar.getInstance()
-    cal.time = date
+
+    var dat = LocalDate.of(year, 1, 13)
     var counter = 0
-    for (months in 1..12) {
-        if (Calendar.FRIDAY == cal.get(Calendar.DAY_OF_WEEK)) {
+    for (months in Month.values()) {
+        if (DayOfWeek.FRIDAY == dat.dayOfWeek) {
             counter++
         }
-        cal.add(Calendar.MONTH, 1)
+        dat = dat.plusMonths(1)
     }
 
    return counter
